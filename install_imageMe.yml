@@ -1,0 +1,31 @@
+---
+- hosts: stuff_nodes
+  become: yes
+  vars:
+    se_id: 006879359584856769921:rplfy3clmho
+    gca_key: AIzaSyDLLC1pqOxkWA8jUjM-Cfwbl_13Sh_2t98
+  tasks:
+    - name: "Install git"
+      yum:
+        name: git
+        state: latest
+    - name: "Install Python"
+      yum:
+        name: python
+        state: latest
+    - name: "Clone imageMe repository"
+      git:
+        repo: https://github.com/jkanclerz/google-search-python.git
+        dest: /home/ec2-user/google-search-python
+    - name: "Set up env. variable #1"
+      shell: "echo 'export SEARCH_ENGINE_ID={{ se_id }}' >> .bashrc "
+    - name: "Set up env. variable #2"
+      shell: "echo 'export GOOGLE_CLOUD_API_KEY={{ gca_key }}' >> .bashrc"
+    - name: "Set up imageMe script"
+      template:
+        src: templates/imageMe.sh
+        dest: "/bin/imageMe"
+    - name: "Change the script's permissions"
+      file:
+        path: "/bin/imageMe"
+        mode: +x
